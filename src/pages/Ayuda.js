@@ -1,7 +1,9 @@
+import Tabla from "../components/TablaWarning"
+
 const Ayuda = () => {
     return (
         <div>
-            <p>Necesitan Ayuda</p>
+             <Tabla />
         </div>
     )
 }

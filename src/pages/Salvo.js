@@ -1,4 +1,4 @@
-import Tabla from "../components/Tabla"
+import Tabla from "../components/TablaSuccess"
 
 const Salvo = () => {
     return (
