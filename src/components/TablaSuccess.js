@@ -1,17 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal } from "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css"; // Importar los estilos de Bootstrap
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from 'leaflet';
+import "leaflet/dist/leaflet.css";
+import 'leaflet/dist/images/marker-icon.png';
+import customMarkerIcon from './location-pin.png';
 
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default,
+  iconUrl: require('leaflet/dist/images/marker-icon.png').default,
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
+});
 
 function TablaSuccess() {
-  // Datos de ejemplo
-  const datos = [
-    { id: 1, nombre: "Juan", edad: 30 },
-    { id: 2, nombre: "María", edad: 25 },
-    { id: 3, nombre: "Pedro", edad: 35 },
-    
-  ];
-
+   // Datos de ejemplo
+   const [datos, setDatos] = useState([]);
    // Estado para controlar la apertura y cierre del modal
    const [modalOpen, setModalOpen] = useState(false);
    // Estado para almacenar los datos del usuario seleccionado para mostrar en el modal
@@ -23,6 +29,24 @@ function TablaSuccess() {
      setModalOpen(true);
    };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("https://protect.vicmr.com/dashboard/safe/info");
+        if (response.ok) {
+          const data = await response.json();
+          setDatos(data);
+        } else {
+          console.error("Failed to fetch data:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="container py-4">
       <h2>Personas que están a Salvo</h2>
@@ -33,7 +57,7 @@ function TablaSuccess() {
           <tr>
             <th>ID</th>
             <th>Nombre</th>
-            <th>Edad</th>
+            <th>Lugar</th>
             <th>Información</th>
           </tr>
         </thead>
@@ -41,9 +65,9 @@ function TablaSuccess() {
         <tbody>
           {datos.map((dato) => (
             <tr key={dato.id}>
-              <td>{dato.id}</td>
+              <td>{dato.detalles}</td>
               <td>{dato.nombre}</td>
-              <td>{dato.edad}</td>
+              <td>{dato.lugar}</td>
               <td><button onClick={() => openModal(dato)}>Ver Detalles</button></td>
             </tr>
           ))} 
@@ -61,9 +85,34 @@ function TablaSuccess() {
             <div className="modal-body">
               {selectedUser && (
                 <>
-                  <p>ID: {selectedUser.id}</p>
+                  <p>ID: {selectedUser.detalles}</p>
                   <p>Nombre: {selectedUser.nombre}</p>
-                  <p>Edad: {selectedUser.edad}</p>
+                  <p>Lugar: {selectedUser.lugar}</p>
+                  <p>Latitud: {selectedUser.latitud}</p>
+                  <p>Longitud: {selectedUser.longitud}</p>
+                  <MapContainer
+                    center={[selectedUser.latitud, selectedUser.longitud]}
+                    zoom={17}
+                    style={{ height: "400px" }}
+                  >
+                    <TileLayer
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker
+                      position={[selectedUser.latitud, selectedUser.longitud]}
+                        icon={L.icon({
+                        iconUrl: customMarkerIcon,
+                        iconSize: [40, 40],
+                        //iconAnchor: [12, 41],
+                        popupAnchor: [1, -10],
+                        //tooltipAnchor: [16, -28],
+                      })}
+                    >
+                      <Popup>
+                        {selectedUser.nombre}'s location
+                      </Popup>
+                    </Marker>
+                  </MapContainer>
                 </>
               )}
             </div>
