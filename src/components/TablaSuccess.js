@@ -32,7 +32,12 @@ function TablaSuccess() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("https://protect.vicmr.com/dashboard/safe/info");
+        const token = localStorage.getItem('token');
+        const response = await fetch("https://protect.vicmr.com/dashboard/safe/info", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         if (response.ok) {
           const data = await response.json();
           setDatos(data);

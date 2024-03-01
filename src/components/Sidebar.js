@@ -7,7 +7,7 @@ const Sidebar = () => {
       <ul>
         <li>
           <NavLink
-            to="/"
+            to="/ayuda"
             className="w-100 d-inline-block"
             activeClassName="active"
           >
