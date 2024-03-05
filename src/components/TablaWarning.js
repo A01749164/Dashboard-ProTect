@@ -6,6 +6,7 @@ import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
 import 'leaflet/dist/images/marker-icon.png';
 import customMarkerIcon from './location-pin.png';
+import MyHeatmapComponent from './MyHeatmapComponent';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -51,6 +52,13 @@ function TablaWarning() {
 
     fetchData();
   }, []);
+
+  const coordinates = [
+    { lat: 19.592013857266434, lng: -99.22913264605279 },
+    { lat: 19.59382152682447, lng: -99.22779890092339 },
+    { lat: 19.595166236608076, lng: -99.22843070332563 },
+    // Add more coordinates as needed
+  ];
 
   return (
     <div className="container py-4">
@@ -130,6 +138,8 @@ function TablaWarning() {
           </div>
         </div>
       </div>
+      <h2>Mapa de calor</h2>
+      <MyHeatmapComponent coordinates={coordinates} />
     </div>
   );
 }
