@@ -6,6 +6,7 @@ import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
 import 'leaflet/dist/images/marker-icon.png';
 import customMarkerIcon from './location-pin.png';
+import MyHeatmapComponent from './MyHeatmapComponent';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -16,18 +17,20 @@ L.Icon.Default.mergeOptions({
 });
 
 function TablaSuccess() {
-   // Hook de datos
-   const [datos, setDatos] = useState([]);
-   // Estado para controlar la apertura y cierre del modal
-   const [modalOpen, setModalOpen] = useState(false);
-   // Estado para almacenar los datos del usuario seleccionado para mostrar en el modal
-   const [selectedUser, setSelectedUser] = useState(null);
+  // Hook de datos
+  const [datos, setDatos] = useState([]);
+  // Hook de coordenadas
+  const [coordinates, setCoordinates] = useState([]);
+  // Estado para controlar la apertura y cierre del modal
+  const [modalOpen, setModalOpen] = useState(false);
+  // Estado para almacenar los datos del usuario seleccionado para mostrar en el modal
+  const [selectedUser, setSelectedUser] = useState(null);
  
-   // Función para abrir el modal y establecer los datos del usuario seleccionado
-   const openModal = (user) => {
-     setSelectedUser(user);
-     setModalOpen(true);
-   };
+  // Función para abrir el modal y establecer los datos del usuario seleccionado
+  const openModal = (user) => {
+    setSelectedUser(user);
+    setModalOpen(true);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,6 +55,30 @@ function TablaSuccess() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchCoordinates = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch("https://protect.vicmr.com/dashboard/safe/coordinates", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          setCoordinates(data);
+        } else {
+          console.error("Failed to fetch data:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchCoordinates();
+  }, []);
+  
   return (
     <div className="container py-4">
       <h2>Personas que están a Salvo</h2>
@@ -131,6 +158,8 @@ function TablaSuccess() {
           </div>
         </div>
       </div>
+      <h2>Mapa de calor</h2>
+      <MyHeatmapComponent coordinates={coordinates} />
     </div>
 
   );

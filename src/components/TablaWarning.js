@@ -19,6 +19,8 @@ L.Icon.Default.mergeOptions({
 function TablaWarning() {
   // Hook de datos
   const [datos, setDatos] = useState([]);
+  // Hook de coordenadas
+  const [coordinates, setCoordinates] = useState([]);
   // Estado para controlar la apertura y cierre del modal
   const [modalOpen, setModalOpen] = useState(false);
   // Estado para almacenar los datos del usuario seleccionado para mostrar en el modal
@@ -53,12 +55,29 @@ function TablaWarning() {
     fetchData();
   }, []);
 
-  const coordinates = [
-    { lat: 19.592013857266434, lng: -99.22913264605279 },
-    { lat: 19.59382152682447, lng: -99.22779890092339 },
-    { lat: 19.595166236608076, lng: -99.22843070332563 },
-    // Add more coordinates as needed
-  ];
+  useEffect(() => {
+    const fetchCoordinates = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch("https://protect.vicmr.com/dashboard/emergency/coordinates", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          setCoordinates(data);
+        } else {
+          console.error("Failed to fetch data:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchCoordinates();
+  }, []); 
 
   return (
     <div className="container py-4">
@@ -108,7 +127,7 @@ function TablaWarning() {
                   <p>Edad: {selectedUser.edad}</p>
                   <MapContainer
                     center={[selectedUser.latitud, selectedUser.longitud]}
-                    zoom={17}
+                    zoom={16}
                     style={{ height: "400px" }}
                   >
                     <TileLayer
