@@ -1,54 +1,86 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal } from "bootstrap"; // Importar el Modal de Bootstrap
 import "bootstrap/dist/css/bootstrap.min.css"; // Importar los estilos de Bootstrap
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from 'leaflet';
+import "leaflet/dist/leaflet.css";
+import 'leaflet/dist/images/marker-icon.png';
+import customMarkerIcon from './location-pin.png';
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default,
+  iconUrl: require('leaflet/dist/images/marker-icon.png').default,
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
+});
 
 function TablaWarning() {
-    // Datos de ejemplo
-    const datos = [
-      { id: 1, nombre: "Juan", edad: 30 },
-      { id: 2, nombre: "María", edad: 25 },
-      { id: 3, nombre: "Pedro", edad: 35 },
-      
-    ];
-  
-    // Estado para controlar la apertura y cierre del modal
-    const [modalOpen, setModalOpen] = useState(false);
-    // Estado para almacenar los datos del usuario seleccionado para mostrar en el modal
-    const [selectedUser, setSelectedUser] = useState(null);
+  // Hook de datos
+  const [datos, setDatos] = useState([]);
+  // Estado para controlar la apertura y cierre del modal
+  const [modalOpen, setModalOpen] = useState(false);
+  // Estado para almacenar los datos del usuario seleccionado para mostrar en el modal
+  const [selectedUser, setSelectedUser] = useState(null);
 
-    // Función para abrir el modal y establecer los datos del usuario seleccionado
-    const openModal = (user) => {
+  // Función para abrir el modal y establecer los datos del usuario seleccionado
+  const openModal = (user) => {
     setSelectedUser(user);
     setModalOpen(true);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch("https://protect.vicmr.com/dashboard/emergency/info", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setDatos(data);
+        } else {
+          console.error("Failed to fetch data:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
 
-    return (
-      <div className="container py-4">
-        <h2>Personas que necesitan Ayuda</h2>
-        <table class="table table-danger">
-         
-      
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Edad</th>
-              <th>Información</th>
+    fetchData();
+  }, []);
+
+  return (
+    <div className="container py-4">
+      <h2>Personas que necesitan Ayuda</h2>
+      <table class="table table-danger">
+
+
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Correo</th>
+            <th>Nombre</th>
+            <th>Edad</th>
+            <th>Información</th>
+          </tr>
+        </thead>
+        <tbody>
+          {datos.map((dato) => (
+            <tr key={dato.id}>
+              <td>{dato.fecha}</td>
+              <td>{dato.email}</td>
+              <td>{dato.nombre}</td>
+              <td>{dato.edad}</td>
+              <td><button onClick={() => openModal(dato)}>Ver Detalles</button></td>
             </tr>
-          </thead>
-          <tbody>
-            {datos.map((dato) => (
-              <tr key={dato.id}>
-                <td>{dato.id}</td>
-                <td>{dato.nombre}</td>
-                <td>{dato.edad}</td>
-                <td><button onClick={() => openModal(dato)}>Ver Detalles</button></td>
-              </tr>
-            ))}
-          </tbody>
+          ))}
+        </tbody>
       
-        </table>
-        {/* Renderizar el Modal */}
+      </table>
+      {/* Renderizar el Modal */}
       <div className="modal" tabIndex="-1" style={{ display: modalOpen ? 'block' : 'none' }}>
         <div className="modal-dialog">
           <div className="modal-content">
@@ -59,9 +91,36 @@ function TablaWarning() {
             <div className="modal-body">
               {selectedUser && (
                 <>
-                  <p>ID: {selectedUser.id}</p>
+                  <p>Fecha: {selectedUser.fecha}</p>
+                  <p>Correo: {selectedUser.email}</p>
                   <p>Nombre: {selectedUser.nombre}</p>
+                  <p>Detalles: {selectedUser.detalles}</p>
+                  <p>Sangre: {selectedUser.sangre}</p>
+                  <p>Carrera: {selectedUser.carrera}</p>
                   <p>Edad: {selectedUser.edad}</p>
+                  <MapContainer
+                    center={[selectedUser.latitud, selectedUser.longitud]}
+                    zoom={17}
+                    style={{ height: "400px" }}
+                  >
+                    <TileLayer
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker
+                      position={[selectedUser.latitud, selectedUser.longitud]}
+                        icon={L.icon({
+                        iconUrl: customMarkerIcon,
+                        iconSize: [40, 40],
+                        //iconAnchor: [12, 41],
+                        popupAnchor: [1, -10],
+                        //tooltipAnchor: [16, -28],
+                      })}
+                    >
+                      <Popup>
+                        {selectedUser.nombre}'s location
+                      </Popup>
+                    </Marker>
+                  </MapContainer>
                 </>
               )}
             </div>
@@ -72,9 +131,8 @@ function TablaWarning() {
         </div>
       </div>
     </div>
-
-    );
-  }
+  );
+}
   
-  export default TablaWarning;
+export default TablaWarning;
   

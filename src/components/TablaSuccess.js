@@ -16,7 +16,7 @@ L.Icon.Default.mergeOptions({
 });
 
 function TablaSuccess() {
-   // Datos de ejemplo
+   // Hook de datos
    const [datos, setDatos] = useState([]);
    // Estado para controlar la apertura y cierre del modal
    const [modalOpen, setModalOpen] = useState(false);
@@ -60,9 +60,10 @@ function TablaSuccess() {
     
         <thead>
           <tr>
-            <th>ID</th>
+            <th>Fecha</th>
+            <th>Correo</th>
             <th>Nombre</th>
-            <th>Lugar</th>
+            <th>Edad</th>
             <th>Información</th>
           </tr>
         </thead>
@@ -70,9 +71,10 @@ function TablaSuccess() {
         <tbody>
           {datos.map((dato) => (
             <tr key={dato.id}>
-              <td>{dato.detalles}</td>
+              <td>{dato.fecha}</td>
+              <td>{dato.email}</td>
               <td>{dato.nombre}</td>
-              <td>{dato.lugar}</td>
+              <td>{dato.edad}</td>
               <td><button onClick={() => openModal(dato)}>Ver Detalles</button></td>
             </tr>
           ))} 
@@ -90,11 +92,13 @@ function TablaSuccess() {
             <div className="modal-body">
               {selectedUser && (
                 <>
-                  <p>ID: {selectedUser.detalles}</p>
+                  <p>Fecha: {selectedUser.fecha}</p>
+                  <p>Correo: {selectedUser.email}</p>
                   <p>Nombre: {selectedUser.nombre}</p>
-                  <p>Lugar: {selectedUser.lugar}</p>
-                  <p>Latitud: {selectedUser.latitud}</p>
-                  <p>Longitud: {selectedUser.longitud}</p>
+                  <p>Detalles: {selectedUser.detalles}</p>
+                  <p>Sangre: {selectedUser.sangre}</p>
+                  <p>Carrera: {selectedUser.carrera}</p>
+                  <p>Edad: {selectedUser.edad}</p>
                   <MapContainer
                     center={[selectedUser.latitud, selectedUser.longitud]}
                     zoom={17}
