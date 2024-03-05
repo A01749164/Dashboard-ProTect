@@ -47,7 +47,7 @@ const LoginRegisterForm = () => {
   };
 
   return (
-    <div>
+    <div className='tablas-protect'>
       <h2>Login/Register</h2>
       <form>
         <div>

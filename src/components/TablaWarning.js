@@ -84,11 +84,11 @@ function TablaWarning() {
       <div className="modal" tabIndex="-1" style={{ display: modalOpen ? 'block' : 'none' }}>
         <div className="modal-dialog">
           <div className="modal-content">
-            <div className="modal-header">
+            <div className="modal-header modal-protect">
               <h5 className="modal-title">Detalles del Usuario</h5>
               <button type="button" className="btn-close" aria-label="Close" onClick={() => setModalOpen(false)}></button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body modal-protect">
               {selectedUser && (
                 <>
                   <p>Fecha: {selectedUser.fecha}</p>
@@ -124,7 +124,7 @@ function TablaWarning() {
                 </>
               )}
             </div>
-            <div className="modal-footer">
+            <div className="modal-footer modal-protect">
               <button type="button" className="btn btn-secondary" onClick={() => setModalOpen(false)}>Cerrar</button>
             </div>
           </div>
