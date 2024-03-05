@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import * as FaIcons from "react-icons/fa6";
+import { IoIosCloseCircle } from "react-icons/io";
 
 const Sidebar = () => {
   return (
@@ -23,6 +24,16 @@ const Sidebar = () => {
           >
             <FaIcons.FaCheckDouble className="me-3" />
             Están a Salvo
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/"
+            className="w-100 d-inline-block"
+            activeClassName="active"
+          >
+          <IoIosCloseCircle className="me-3" />
+          Logout
           </NavLink>
         </li>
       </ul>

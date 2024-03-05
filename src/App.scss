@@ -52,3 +52,64 @@ $light-gray: #92929F;
   }
 }
 
+.login-protect {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: $secondary-color;
+
+  form {
+    background-color: $primary-color;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    color: $light-gray;
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    div {
+      margin-bottom: 1rem;
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.5rem;
+        border: none;
+        border-radius: 0.25rem;
+        background-color: $secondary-color;
+        color: $light-gray;
+
+        &:focus {
+          outline: none;
+          box-shadow: 0 0 0 2px rgba($light-gray, 0.5);
+        }
+      }
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 0.5rem 1rem;
+      gap: 2rem;
+      margin-bottom: 10%;
+      border: none;
+      border-radius: 0.25rem;
+      background-color: $light-gray;
+      color: $primary-color;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+
+      &:hover {
+        background-color: darken($light-gray, 10%);
+      }
+    }
+  }
+}
+
